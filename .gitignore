@@ -1,0 +1,21 @@
+
+# Ignore Excel files
+*.xlsx
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Logs
+logs/
+
+# Temp folders
+output_temp_baidu/
+output_photos/
+
+# VSCode
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
