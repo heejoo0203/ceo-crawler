@@ -22,23 +22,17 @@ from colorama import Fore, Style, init as colorama_init
 
 
 
-# ================================================================
 # noisy logger 제거
-# ================================================================
-
 logging.getLogger("icrawler").setLevel(logging.CRITICAL)
 logging.getLogger("PIL").setLevel(logging.ERROR)
 logging.getLogger("urllib3").setLevel(logging.ERROR)
 logging.getLogger("requests").setLevel(logging.ERROR)
 logging.disable(logging.CRITICAL)
 
-colorama_init(autoreset=True)   
+colorama_init(autoreset=True)
 
 
-# ================================================================
 # 경로 설정
-# ================================================================
-
 TEMP_DIR = "output_temp_baidu"
 OUTPUT_DIR = "output_photos"
 LOG_DIR = "logs"
@@ -48,11 +42,8 @@ os.makedirs(OUTPUT_DIR, exist_ok=True)
 os.makedirs(LOG_DIR, exist_ok=True)
 
 
-# ================================================================
 # loguru 설정
-# ================================================================
-
-logger.remove()  # 기본 logger 제거
+logger.remove()
 logger.add(
     os.path.join(LOG_DIR, "run_{time}.log"),
     level="INFO",
@@ -65,11 +56,11 @@ logger.add(lambda msg: print(msg, end=""), level="INFO")
 logger.info("CEO Photo Crawler Initialized")
 
 
-# ================================================================
-# Excel Loader
-# ================================================================
 
-def load_ceo_excel(path="input_ceo_list_중복제거.xlsx"): #필요하면 엑셀 파일명 수정
+# ================================================================
+# Excel Loader  (입력 파일 변경됨)
+# ================================================================
+def load_ceo_excel(path="input_ceo_list.xlsx"):  # ★ 입력 파일 변경完
     df = pd.read_excel(path)
     required = ["company", "ceo", "PersonID"]
 
@@ -88,10 +79,8 @@ def load_ceo_excel(path="input_ceo_list_중복제거.xlsx"): #필요하면 엑�
     return rows
 
 
-# ================================================================
-# 이미지 로드
-# ================================================================
 
+# 이미지 로드
 def open_image(path):
     try:
         return Image.open(path).convert("RGB")
@@ -99,10 +88,8 @@ def open_image(path):
         return None
 
 
-# ================================================================
-# Haar Cascade 로드
-# ================================================================
 
+# Haar Cascade 로드
 opencv_data_path = os.path.join(os.path.dirname(cv2.__file__), "data")
 haar_path = os.path.join(opencv_data_path, "haarcascade_frontalface_default.xml")
 
@@ -113,10 +100,8 @@ else:
     logger.info(f"Haar loaded: {haar_path}")
 
 
-# ================================================================
-# 얼굴 검출
-# ================================================================
 
+# 얼굴 검출
 def detect_faces(img_pil):
     try:
         img = cv2.cvtColor(np.array(img_pil), cv2.COLOR_RGB2GRAY)
@@ -131,10 +116,8 @@ def detect_faces(img_pil):
     return result
 
 
-# ================================================================
-# 얼굴 스코어링
-# ================================================================
 
+# 얼굴 스코어링
 def score_face(box, w, h):
     x1, y1, x2, y2 = box
     fw, fh = x2-x1, y2-y1
@@ -149,10 +132,8 @@ def score_face(box, w, h):
     return size_score * center_score * ratio_penalty
 
 
-# ================================================================
-# 얼굴 crop → 1024x1024
-# ================================================================
 
+# 얼굴 crop → 1024x1024
 def crop_1024(img, box):
     x1, y1, x2, y2 = box
     face = img.crop((x1, y1, x2, y2))
@@ -160,10 +141,8 @@ def crop_1024(img, box):
     return face
 
 
-# ================================================================
-# icrawler Baidu 이미지 다운로드
-# ================================================================
 
+# Baidu 이미지 다운로드
 def baidu_icrawler(company, ceo):
     keyword = f"{company} {ceo} 照片"
     logger.info(f"[Baidu] Searching: {keyword}")
@@ -184,10 +163,8 @@ def baidu_icrawler(company, ceo):
         return []
 
 
-# ================================================================
-# 후보 중 가장 좋은 얼굴 선택
-# ================================================================
 
+# 후보 중 가장 좋은 얼굴 선택
 def select_best_face(files):
     best_img = None
     best_box = None
@@ -214,10 +191,8 @@ def select_best_face(files):
     return None, None
 
 
-# ================================================================
-# 최종 저장
-# ================================================================
 
+# 최종 저장
 def save_final(img, box, pid):
     try:
         face = crop_1024(img, box)
@@ -229,11 +204,19 @@ def save_final(img, box, pid):
         return None
 
 
-# ================================================================
-# 단일 CEO 처리
-# ================================================================
 
+# 단일 CEO 처리
 def process(company, ceo, pid):
+
+    # ========================================================
+    # ★ 이미 저장된 PersonID는 건너뛰기
+    # ========================================================
+    existing_file = os.path.join(OUTPUT_DIR, f"{pid}.png")
+    if os.path.exists(existing_file):
+        tqdm.write(f"{Fore.YELLOW}[SKIPPED]{Style.RESET_ALL} Already exists → {pid}")
+        logger.info(f"<yellow>Skip (already exists):</yellow> PID={pid}")
+        return None
+
     logger.info(f"<cyan>Processing:</cyan> {company} / {ceo} ({pid})")
 
     files = baidu_icrawler(company, ceo)
@@ -256,10 +239,7 @@ def process(company, ceo, pid):
 
 
 
-# ================================================================
-# 메인 (tqdm)
-# ================================================================
-
+# 메인
 def main():
     rows = load_ceo_excel()
     total = len(rows)
@@ -273,7 +253,6 @@ def main():
 
     tqdm.write(Fore.GREEN + "\nAll completed!" + Style.RESET_ALL)
     logger.info("<green>=== ALL COMPLETED ===</green>")
-
 
 
 if __name__ == "__main__":

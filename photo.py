@@ -5,7 +5,7 @@ from openpyxl.drawing.image import Image as XLImage
 
 # 경로 설정
 image_dir = os.path.join(os.getcwd(), "output_photos") #사진이 저장되어 있는 폴더
-excel_path = os.path.join(os.getcwd(), "input_ceo_list_원본.xlsx") #사진을 넣을 중복 제거 전 엑셀파일
+excel_path = os.path.join(os.getcwd(), "input_ceo_list.xlsx") #사진을 넣을 엑셀파일
 
 # 엑셀 불러오기
 wb = load_workbook(excel_path)

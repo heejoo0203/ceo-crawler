@@ -28,15 +28,13 @@ git clone <레포지토리 주소>
 - `photo.py`
 - `requirements.txt`
 - `haarcascade_frontalface_default.xml`  (이미 포함됨)
-- `input_ceo_list_중복제거.xlsx`  (팀 공유 파일)
-- `input_ceo_list_원본.xlsx`       (팀 공유 파일)
+- `input_ceo_list.xlsx`  (팀 공유 파일)]
 
-⚠ 두 엑셀 파일(.xlsx)은 GitHub에 포함되지 않습니다.  
+⚠ 엑셀 파일(.xlsx)은 GitHub에 포함되지 않습니다.  
 → **팀에서 제공한 파일을 반드시 프로젝트 폴더에 직접 넣어주세요.**
 
 ⚠ 아래 파일명은 절대 변경하면 안 됩니다.
-- `input_ceo_list_중복제거.xlsx`
-- `input_ceo_list_원본.xlsx`
+- `input_ceo_list.xlsx`
 
 ---
 
@@ -72,7 +70,7 @@ python photo.py
 
 실행이 끝나면 아래 파일이 자동 생성됩니다:
 
-### ✔ `input_ceo_list_원본_이미지삽입.xlsx`  
+### ✔ `input_ceo_list_이미지삽입.xlsx`  
 → 이것이 최종 결과물입니다.
 
 ---
@@ -85,8 +83,7 @@ project/
  ├─ photo.py
  ├─ requirements.txt
  ├─ haarcascade_frontalface_default.xml
- ├─ input_ceo_list_중복제거.xlsx
- ├─ input_ceo_list_원본.xlsx
+ ├─ input_ceo_list.xlsx
  ├─ output_photos/          
  ├─ output_temp_baidu/      
  └─ logs/                   
@@ -114,11 +111,34 @@ dlib는 Windows에서 pip로 설치가 잘 안 되는 경우가 많습니다.
 ```
 python setup.py install
 ```
-
 6. 설치 완료 후 다시 다음 실행  
 ```
 pip install -r requirements.txt
 ```
+
+## ❗ ❗ 추가 필수 안내 — CMake 필요함
+
+dlib은 Windows에서 빌드할 때 CMake가 반드시 필요합니다.
+설치되어 있지 않으면 dlib 설치 중 오류가 발생합니다.
+
+### ✔ CMake 설치 방법
+
+1. 공식 다운로드 페이지 이동
+   🔗 https://cmake.org/download/
+
+2. Windows x64 Installer 다운로드
+
+3. 설치 시 반드시 다음 옵션 체크
+   ✔ Add CMake to PATH
+
+설치 후 PowerShell에서 다음 명령으로 확인:
+
+```bash
+cmake --version
+```
+
+버전이 나오면 정상 설치됨.
+---
 
 ---
 
